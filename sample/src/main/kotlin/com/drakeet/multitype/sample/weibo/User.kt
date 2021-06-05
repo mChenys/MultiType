@@ -21,4 +21,4 @@ import androidx.annotation.DrawableRes
 /**
  * @author Drakeet Xu
  */
-class User(var name: String, @field:DrawableRes var avatar: Int)
+class User(var name: String, @field:DrawableRes  var avatar: Int)

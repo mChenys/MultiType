@@ -30,27 +30,38 @@ import com.drakeet.multitype.sample.R
 
 /**
  * @author Drakeet Xu
+ * 公共的数据处理
  */
 abstract class WeiboFrameBinder<Content : WeiboContent, SubViewHolder : ContentHolder> : ItemViewBinder<Weibo, WeiboFrameBinder.FrameHolder>() {
 
+  /**
+   * 子类实现
+   */
   protected abstract fun onCreateContentViewHolder(inflater: LayoutInflater, parent: ViewGroup): ContentHolder
 
+  /**
+   * 子类实现
+   */
   protected abstract fun onBindContentViewHolder(holder: SubViewHolder, content: Content)
 
   override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): FrameHolder {
     val root = inflater.inflate(R.layout.item_weibo_frame, parent, false)
     val subViewHolder = onCreateContentViewHolder(inflater, parent)
+    // 创建父View的Holder
     return FrameHolder(root, subViewHolder, this)
   }
 
   override fun onBindViewHolder(holder: FrameHolder, item: Weibo) {
+    // 共性View处理
     holder.avatar.setImageResource(item.user.avatar)
     holder.username.text = item.user.name
     holder.createTime.text = item.createTime
     val weiboContent = item.content
+    // 非共性View的处理交给子View
     @Suppress("UNCHECKED_CAST")
     onBindContentViewHolder(holder.subViewHolder as SubViewHolder, weiboContent as Content)
   }
+
 
   class FrameHolder(itemView: View, val subViewHolder: ContentHolder, binder: WeiboFrameBinder<*, *>) : RecyclerView.ViewHolder(itemView) {
 

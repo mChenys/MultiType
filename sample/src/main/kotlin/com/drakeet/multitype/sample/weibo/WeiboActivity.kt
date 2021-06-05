@@ -32,58 +32,58 @@ import java.util.*
  */
 class WeiboActivity : MenuBaseActivity() {
 
-  private lateinit var adapter: MultiTypeAdapter
-  private lateinit var items: MutableList<Any>
+    private lateinit var adapter: MultiTypeAdapter
+    private lateinit var items: MutableList<Any>
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_list)
-    val recyclerView = findViewById<RecyclerView>(R.id.list)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_list)
+        val recyclerView = findViewById<RecyclerView>(R.id.list)
 
-    adapter = MultiTypeAdapter()
+        adapter = MultiTypeAdapter()
 
-    adapter.register(Weibo::class).to(
-      SimpleTextViewBinder(),
-      SimpleImageViewBinder()
-    ).withLinker { _, weibo ->
-      when (weibo.content) {
-        is SimpleText -> 0
-        is SimpleImage -> 1
-        else -> 0
-      }
+        adapter.register(Weibo::class).to(
+            SimpleTextViewBinder(),
+            SimpleImageViewBinder()
+        ).withLinker { _, weibo ->
+            when (weibo.content) {
+                is SimpleText -> 0
+                is SimpleImage -> 1
+                else -> 0
+            }
+        }
+
+        recyclerView.adapter = adapter
+
+        items = ArrayList()
+
+        val user = User("drakeet", R.drawable.avatar_drakeet)
+        val simpleText = SimpleText("A simple text Weibo: Hello World.")
+        val simpleImage = SimpleImage(R.drawable.img_10)
+        for (i in 0..19) {
+            items.add(Weibo(user, simpleText))
+            items.add(Weibo(user, simpleImage))
+        }
+        adapter.items = items
+        adapter.notifyDataSetChanged()
+
+        loadRemoteData()
     }
 
-    recyclerView.adapter = adapter
-
-    items = ArrayList()
-
-    val user = User("drakeet", R.drawable.avatar_drakeet)
-    val simpleText = SimpleText("A simple text Weibo: Hello World.")
-    val simpleImage = SimpleImage(R.drawable.img_10)
-    for (i in 0..19) {
-      items.add(Weibo(user, simpleText))
-      items.add(Weibo(user, simpleImage))
+    private fun loadRemoteData() {
+        val weiboList: List<Weibo> = WeiboJsonParser.fromJson(
+            JSON_FROM_SERVICE // 替换占位符
+                .replace("\$avatar", "" + R.drawable.avatar_drakeet)
+                .replace("\$content", "" + R.drawable.img_00)
+        )
+        items = ArrayList(items)
+        items.addAll(0, weiboList) // 动态插入2条数据
+        adapter.items = items
+        adapter.notifyDataSetChanged()
     }
-    adapter.items = items
-    adapter.notifyDataSetChanged()
 
-    loadRemoteData()
-  }
-
-  private fun loadRemoteData() {
-    val weiboList = WeiboJsonParser.fromJson(
-      JSON_FROM_SERVICE
-        .replace("\$avatar", "" + R.drawable.avatar_drakeet)
-        .replace("\$content", "" + R.drawable.img_00)
-    )
-    items = ArrayList(items)
-    items.addAll(0, weiboList)
-    adapter.items = items
-    adapter.notifyDataSetChanged()
-  }
-
-  companion object {
-    private const val JSON_FROM_SERVICE = """[
+    companion object {
+        private const val JSON_FROM_SERVICE = """[
       {
           "content":{
               "text":"A simple text Weibo: JSON_FROM_SERVICE.",
@@ -107,5 +107,5 @@ class WeiboActivity : MenuBaseActivity() {
           }
       }
     ]"""
-  }
+    }
 }

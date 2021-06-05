@@ -22,6 +22,6 @@ import com.google.gson.annotations.SerializedName
  * @author Drakeet Xu
  */
 abstract class WeiboContent protected constructor(
-  @field:SerializedName("content_type")
+  @field:SerializedName("content_type") // 支持json解析
   val contentType: String
 )

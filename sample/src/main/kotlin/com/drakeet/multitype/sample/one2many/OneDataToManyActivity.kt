@@ -19,6 +19,7 @@ package com.drakeet.multitype.sample.one2many
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
+import com.drakeet.multitype.Linker
 import com.drakeet.multitype.MultiTypeAdapter
 import com.drakeet.multitype.sample.MenuBaseActivity
 import com.drakeet.multitype.sample.R
@@ -29,42 +30,67 @@ import java.util.*
  */
 class OneDataToManyActivity : MenuBaseActivity() {
 
-  @VisibleForTesting
-  lateinit var recyclerView: RecyclerView
-  @VisibleForTesting
-  lateinit var adapter: MultiTypeAdapter
-
-  private val dataFromService: List<Data>
     @VisibleForTesting
-    get() {
-      val list = ArrayList<Data>()
-      var i = 0
-      while (i < 30) {
-        list.add(Data("title: $i", Data.TYPE_1))
-        list.add(Data("title: ${ i + 1 }", Data.TYPE_2))
-        i += 2
-      }
-      return list
+    lateinit var recyclerView: RecyclerView
+
+    @VisibleForTesting
+    lateinit var adapter: MultiTypeAdapter
+
+    private val dataFromService: List<Data>
+        @VisibleForTesting
+        get() {
+            val list = ArrayList<Data>()
+            var i = 0
+            while (i < 30) {
+                list.add(Data("title: $i", Data.TYPE_1))
+                list.add(Data("title: ${i + 1}", Data.TYPE_2))
+                i += 2
+            }
+            return list
+        }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_list)
+        recyclerView = findViewById(R.id.list)
+        adapter = MultiTypeAdapter()
+
+        // 方式1
+        /* adapter.register(Data::class).to(
+           DataType1ViewBinder(),
+           DataType2ViewBinder()
+         ).withKotlinClassLinker { _, data ->
+           when (data.type) {
+             Data.TYPE_2 -> DataType2ViewBinder::class
+             else -> DataType1ViewBinder::class
+           }
+         }*/
+        // 方式2
+        /*adapter.register(Data::class).to(
+          DataType1ViewBinder(),
+          DataType2ViewBinder()
+        ).withLinker { _, data ->
+          when (data.type) {
+            Data.TYPE_2 -> 1
+            else -> 0
+          }
+        }*/
+
+        // 方式3
+        adapter.register(Data::class).to(
+            DataType1ViewBinder(),
+            DataType2ViewBinder()
+        ).withLinker(object : Linker<Data> {
+            override fun index(position: Int, item: Data): Int {
+               return when (item.type) {
+                    Data.TYPE_2 -> 1
+                    else -> 0
+                }
+            }
+        })
+
+        adapter.items = dataFromService
+        adapter.notifyDataSetChanged()
+        recyclerView.adapter = adapter
     }
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_list)
-    recyclerView = findViewById(R.id.list)
-    adapter = MultiTypeAdapter()
-
-    adapter.register(Data::class).to(
-      DataType1ViewBinder(),
-      DataType2ViewBinder()
-    ).withKotlinClassLinker { _, data ->
-      when (data.type) {
-        Data.TYPE_2 -> DataType2ViewBinder::class
-        else -> DataType1ViewBinder::class
-      }
-    }
-
-    adapter.items = dataFromService
-    adapter.notifyDataSetChanged()
-    recyclerView.adapter = adapter
-  }
 }
