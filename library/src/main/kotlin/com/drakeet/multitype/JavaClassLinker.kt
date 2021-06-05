@@ -20,6 +20,7 @@ package com.drakeet.multitype
  * An interface to link the items and delegates by the classes of delegates.
  *
  * @author Drakeet Xu
+ * 针对java class的ClassLinker
  */
 interface JavaClassLinker<T> {
 
@@ -28,7 +29,7 @@ interface JavaClassLinker<T> {
    *
    * @param position The position in items
    * @param item The item
-   * @return The index of your registered delegates
+   * @return The index of your registered delegates 返回delegate的class对象
    * @see OneToManyEndpoint.withJavaClassLinker
    */
   fun index(position: Int, item: T): Class<out ItemViewDelegate<T, *>>

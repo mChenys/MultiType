@@ -25,11 +25,12 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 /***
  * @author Drakeet Xu
  * @since v4.1.0
+ * 每一项item的封装
  */
 abstract class ItemViewDelegate<T, VH : ViewHolder> {
 
   @Suppress("PropertyName")
-  internal var _adapter: MultiTypeAdapter? = null
+  internal var _adapter: MultiTypeAdapter? = null // 列表adapter
 
   /**
    * Gets the associated [MultiTypeAdapter].
@@ -47,6 +48,7 @@ abstract class ItemViewDelegate<T, VH : ViewHolder> {
     }
 
   /**
+   * 获取或设置数据集合
    * Gets or sets the items of the associated [MultiTypeAdapter].
    * @see MultiTypeAdapter.items
    * @since v4.0.0

@@ -20,25 +20,30 @@ package com.drakeet.multitype
  * @author Drakeet Xu
  */
 internal class ClassLinkerBridge<T> private constructor(
-  private val javaClassLinker: JavaClassLinker<T>,
-  private val delegates: Array<ItemViewDelegate<T, *>>
+    private val javaClassLinker: JavaClassLinker<T>,
+    private val delegates: Array<ItemViewDelegate<T, *>>
 ) : Linker<T> {
 
-  override fun index(position: Int, item: T): Int {
-    val indexedClass = javaClassLinker.index(position, item)
-    val index = delegates.indexOfFirst { it.javaClass == indexedClass }
-    if (index != -1) return index
-    throw IndexOutOfBoundsException(
-      "The delegates'(${delegates.contentToString()}) you registered do not contain this ${indexedClass.name}."
-    )
-  }
-
-  companion object {
-    fun <T> toLinker(
-      javaClassLinker: JavaClassLinker<T>,
-      delegates: Array<ItemViewDelegate<T, *>>
-    ): Linker<T> {
-      return ClassLinkerBridge(javaClassLinker, delegates)
+    override fun index(position: Int, item: T): Int {
+        // 获取使用者返回的delegate的Class对象
+        val indexedClass = javaClassLinker.index(position, item)
+        // 从delegate集合中查找此delegate首次出现的位置
+        val index = delegates.indexOfFirst {
+            it.javaClass == indexedClass  // 之所以对比Class对象，是因为Class对象是全局唯一的
+        }
+        if (index != -1) return index // 存在则返回，这个index关乎列表item的类型
+        throw IndexOutOfBoundsException(
+            "The delegates'(${delegates.contentToString()}) you registered do not contain this ${indexedClass.name}."
+        )
     }
-  }
+
+    companion object {
+        fun <T> toLinker(
+            javaClassLinker: JavaClassLinker<T>,
+            delegates: Array<ItemViewDelegate<T, *>>
+        ): Linker<T> {
+            // 返回ClassLinkerBridge对象，它是实现了Linker接口的
+            return ClassLinkerBridge(javaClassLinker, delegates)
+        }
+    }
 }

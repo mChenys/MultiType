@@ -22,6 +22,7 @@ import kotlin.reflect.KClass
  * An interface to link the items and delegates by the classes of delegates.
  *
  * @author Drakeet Xu
+ * 针对kotlin class 的ClassLinker
  */
 interface KotlinClassLinker<T> {
 
@@ -30,7 +31,7 @@ interface KotlinClassLinker<T> {
    *
    * @param position The position in items
    * @param item The item
-   * @return The index of your registered delegates
+   * @return The index of your registered delegates，返回delegate的class对象
    * @see OneToManyEndpoint.withJavaClassLinker
    */
   fun index(position: Int, item: T): KClass<out ItemViewDelegate<T, *>>

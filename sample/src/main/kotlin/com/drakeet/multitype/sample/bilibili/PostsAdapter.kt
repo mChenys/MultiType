@@ -28,7 +28,7 @@ import com.drakeet.multitype.sample.R
 /**
  * @author Drakeet Xu
  */
-class PostsAdapter : RecyclerView.Adapter<PostsAdapter.ViewHolder>() {
+class   PostsAdapter : RecyclerView.Adapter<PostsAdapter.ViewHolder>() {
 
   private var posts = emptyList<Post>()
 
